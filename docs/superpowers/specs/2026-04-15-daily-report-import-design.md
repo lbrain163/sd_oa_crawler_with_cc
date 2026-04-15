@@ -69,7 +69,13 @@ COMMENT ON COLUMN daily_reports.approval_status IS '审批状态';
 COMMENT ON COLUMN daily_reports.approval_time IS '审批时间';
 COMMENT ON COLUMN daily_reports.approval_comment IS '审批意见';
 COMMENT ON COLUMN daily_reports.created_at IS '记录创建时间';
+
+-- 唯一索引：防止重复录入（同一项目、提交人、日期、任务）
+CREATE UNIQUE INDEX idx_daily_reports_unique
+  ON daily_reports (project_name, submitter_name, work_date, task_name);
 ```
+
+**唯一索引：** `(project_name, submitter_name, work_date, task_name)` 防止重复录入。
 
 **RLS 策略：** 由于是个人使用，RLS 暂时禁用（后续可按需开启）。
 
