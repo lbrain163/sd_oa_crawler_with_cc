@@ -39,20 +39,36 @@
 ```sql
 CREATE TABLE daily_reports (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  submitter_name TEXT,
-  work_date DATE,
-  day_type TEXT,
-  work_mode TEXT,
-  project_name TEXT,
-  task_name TEXT,
-  work_ratio INTEGER,
-  work_content TEXT,
-  approver_name TEXT,
-  approval_status TEXT,
-  approval_time TIMESTAMP,
-  approval_comment TEXT,
-  created_at TIMESTAMP DEFAULT now()
+  submitter_name TEXT,                      -- 提交人名称
+  work_date DATE,                            -- 出勤日期
+  day_type TEXT,                            -- 工作日/节假日
+  work_mode TEXT,                            -- 工作情形（现场出勤/远程）
+  project_name TEXT,                         -- 项目名称
+  task_name TEXT,                           -- 任务名称
+  work_ratio INTEGER,                        -- 工作量占比（%）
+  work_content TEXT,                         -- 工作内容
+  approver_name TEXT,                        -- 审批人名称
+  approval_status TEXT,                      -- 审批状态
+  approval_time TIMESTAMP,                   -- 审批时间
+  approval_comment TEXT,                      -- 审批意见
+  created_at TIMESTAMP DEFAULT now()         -- 记录创建时间
 );
+
+COMMENT ON TABLE daily_reports IS '日报数据表';
+COMMENT ON COLUMN daily_reports.id IS '主键UUID';
+COMMENT ON COLUMN daily_reports.submitter_name IS '提交人名称';
+COMMENT ON COLUMN daily_reports.work_date IS '出勤日期';
+COMMENT ON COLUMN daily_reports.day_type IS '工作日/节假日';
+COMMENT ON COLUMN daily_reports.work_mode IS '工作情形（现场出勤/远程）';
+COMMENT ON COLUMN daily_reports.project_name IS '项目名称';
+COMMENT ON COLUMN daily_reports.task_name IS '任务名称';
+COMMENT ON COLUMN daily_reports.work_ratio IS '工作量占比（%）';
+COMMENT ON COLUMN daily_reports.work_content IS '工作内容';
+COMMENT ON COLUMN daily_reports.approver_name IS '审批人名称';
+COMMENT ON COLUMN daily_reports.approval_status IS '审批状态';
+COMMENT ON COLUMN daily_reports.approval_time IS '审批时间';
+COMMENT ON COLUMN daily_reports.approval_comment IS '审批意见';
+COMMENT ON COLUMN daily_reports.created_at IS '记录创建时间';
 ```
 
 **RLS 策略：** 由于是个人使用，RLS 暂时禁用（后续可按需开启）。
