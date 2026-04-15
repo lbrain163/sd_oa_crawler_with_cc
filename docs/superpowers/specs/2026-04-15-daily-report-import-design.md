@@ -21,36 +21,36 @@
 | 字段名 | 类型 | 说明 |
 |--------|------|------|
 | id | uuid | 主键，默认 `gen_random_uuid()` |
-| submitter_name | text | 提交人名称 |
+| submitter_name | varchar(64) | 提交人名称 |
 | work_date | date | 出勤日期 |
-| day_type | text | 工作日/节假日 |
-| work_mode | text | 工作情形（现场出勤/远程） |
-| project_name | text | 项目名称 |
-| task_name | text | 任务名称 |
+| day_type | varchar(64) | 工作日/节假日 |
+| work_mode | varchar(64) | 工作情形（现场出勤/远程） |
+| project_name | varchar(64) | 项目名称 |
+| task_name | varchar(64) | 任务名称 |
 | work_ratio | integer | 工作量占比（%） |
 | work_content | text | 工作内容 |
-| approver_name | text | 审批人名称 |
-| approval_status | text | 审批状态 |
+| approver_name | varchar(64) | 审批人名称 |
+| approval_status | varchar(64) | 审批状态 |
 | approval_time | timestamp | 审批时间 |
-| approval_comment | text | 审批意见 |
+| approval_comment | varchar(64) | 审批意见 |
 | created_at | timestamp | 记录创建时间，默认 `now()` |
 
 **DDL：**
 ```sql
 CREATE TABLE daily_reports (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  submitter_name TEXT,                      -- 提交人名称
+  submitter_name VARCHAR(64),                -- 提交人名称
   work_date DATE,                            -- 出勤日期
-  day_type TEXT,                            -- 工作日/节假日
-  work_mode TEXT,                            -- 工作情形（现场出勤/远程）
-  project_name TEXT,                         -- 项目名称
-  task_name TEXT,                           -- 任务名称
+  day_type VARCHAR(64),                      -- 工作日/节假日
+  work_mode VARCHAR(64),                    -- 工作情形（现场出勤/远程）
+  project_name VARCHAR(64),                  -- 项目名称
+  task_name VARCHAR(64),                    -- 任务名称
   work_ratio INTEGER,                        -- 工作量占比（%）
   work_content TEXT,                         -- 工作内容
-  approver_name TEXT,                        -- 审批人名称
-  approval_status TEXT,                      -- 审批状态
+  approver_name VARCHAR(64),                -- 审批人名称
+  approval_status VARCHAR(64),              -- 审批状态
   approval_time TIMESTAMP,                   -- 审批时间
-  approval_comment TEXT,                      -- 审批意见
+  approval_comment VARCHAR(64),              -- 审批意见
   created_at TIMESTAMP DEFAULT now()         -- 记录创建时间
 );
 
