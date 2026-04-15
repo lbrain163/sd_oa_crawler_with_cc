@@ -1,0 +1,166 @@
+# 日报 Excel 导入系统设计
+
+## 概述
+
+一个简约的 Web 应用，用于上传 Excel 文件并将其中的日报数据写入 Supabase 数据库。
+
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 框架 | Next.js 14 (App Router) |
+| 样式 | Tailwind CSS |
+| Excel 解析 | xlsx (SheetJS) |
+| 数据库 | Supabase (PostgreSQL) |
+| 部署 | Vercel（推荐） |
+
+## 数据库表设计
+
+**表名：`daily_reports`**
+
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| id | uuid | 主键，默认 `gen_random_uuid()` |
+| submitter_name | text | 提交人名称 |
+| work_date | date | 出勤日期 |
+| day_type | text | 工作日/节假日 |
+| work_mode | text | 工作情形（现场出勤/远程） |
+| project_name | text | 项目名称 |
+| task_name | text | 任务名称 |
+| work_ratio | integer | 工作量占比（%） |
+| work_content | text | 工作内容 |
+| approver_name | text | 审批人名称 |
+| approval_status | text | 审批状态 |
+| approval_time | timestamp | 审批时间 |
+| approval_comment | text | 审批意见 |
+| created_at | timestamp | 记录创建时间，默认 `now()` |
+
+**DDL：**
+```sql
+CREATE TABLE daily_reports (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  submitter_name TEXT,
+  work_date DATE,
+  day_type TEXT,
+  work_mode TEXT,
+  project_name TEXT,
+  task_name TEXT,
+  work_ratio INTEGER,
+  work_content TEXT,
+  approver_name TEXT,
+  approval_status TEXT,
+  approval_time TIMESTAMP,
+  approval_comment TEXT,
+  created_at TIMESTAMP DEFAULT now()
+);
+```
+
+**RLS 策略：** 由于是个人使用，RLS 暂时禁用（后续可按需开启）。
+
+## 页面结构
+
+### 首页 `/`
+
+- 页面标题 + 简短说明
+- 文件上传区域（支持拖拽或点击上传 `.xls` / `.xlsx`）
+- 上传后显示数据预览表格（前 5 行 + 总行数）
+- "确认导入" 按钮
+
+### 结果页 `/upload`
+
+- 导入结果统计（成功数 / 失败数）
+- 如有失败显示错误详情
+- "返回首页" 按钮
+
+## 功能流程
+
+```
+上传 Excel 文件
+    ↓
+前端解析（xlsx 库）→ 预览表格（展示前5行 + 总行数）
+    ↓
+用户点击"确认导入"
+    ↓
+调用 API Route `/api/import`
+    ↓
+API 逐行写入 Supabase
+    ↓
+返回结果（成功数 / 失败数）
+    ↓
+跳转到结果页显示结果
+```
+
+## API 设计
+
+### POST `/api/import`
+
+**请求体：**
+```json
+{
+  "rows": [
+    {
+      "submitter_name": "刘伟",
+      "work_date": "2026-04-01",
+      "day_type": "工作日",
+      "work_mode": "现场出勤",
+      "project_name": "铁塔智联-两翼组件化541-4",
+      "task_name": "小塔2.0.70版本-需求开发",
+      "work_ratio": 100,
+      "work_content": "开发小塔...",
+      "approver_name": "梁冰",
+      "approval_status": "已审批",
+      "approval_time": "2026-04-03 09:10:07",
+      "approval_comment": "同意"
+    }
+  ]
+}
+```
+
+**响应：**
+```json
+{
+  "success": true,
+  "imported": 69,
+  "failed": 0,
+  "errors": []
+}
+```
+
+## 目录结构
+
+```
+/app
+  /page.tsx              首页
+  /upload/page.tsx       结果页
+  /api/import/route.ts   导入 API
+/components
+  /FileUploader.tsx       文件上传组件
+  /DataPreview.tsx        数据预览表格组件
+/lib
+  /supabase.ts           Supabase 客户端
+  /parseExcel.ts         Excel 解析逻辑
+```
+
+## 环境变量
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://bkdrhorayjkqncnilwij.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+## Excel 列映射
+
+| Excel 列名 | 数据库字段 |
+|-----------|-----------|
+| 提交人名称 | submitter_name |
+| 出勤日期 | work_date |
+| 工作日/节假日 | day_type |
+| 工作情形 | work_mode |
+| 项目名称 | project_name |
+| 任务名称 | task_name |
+| 工作量占比 | work_ratio |
+| 工作内容 | work_content |
+| 审批人名称 | approver_name |
+| 审批状态 | approval_status |
+| 审批时间 | approval_time |
+| 审批意见 | approval_comment |
