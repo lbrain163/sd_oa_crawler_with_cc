@@ -75,7 +75,9 @@ CREATE UNIQUE INDEX idx_daily_reports_unique
   ON daily_reports (project_name, submitter_name, work_date, task_name);
 ```
 
-**唯一索引：** `(project_name, submitter_name, work_date, task_name)` 防止重复录入。
+**唯一索引：** `(project_name, submitter_name, work_date, task_name)` 用于快速定位重复记录。
+
+**重复数据处理策略：** 先删后插（Delete-then-Insert）。导入时根据唯一索引匹配已有记录，匹配到则删除旧记录再插入新记录，实现覆盖更新。
 
 **RLS 策略：** 由于是个人使用，RLS 暂时禁用（后续可按需开启）。
 
@@ -105,7 +107,8 @@ CREATE UNIQUE INDEX idx_daily_reports_unique
     ↓
 调用 API Route `/api/import`
     ↓
-API 逐行写入 Supabase
+API 逐行处理：根据唯一索引匹配，匹配到则先删后插，未匹配则直接插入
+    ↓
     ↓
 返回结果（成功数 / 失败数）
     ↓
@@ -143,6 +146,7 @@ API 逐行写入 Supabase
 {
   "success": true,
   "imported": 69,
+  "updated": 5,
   "failed": 0,
   "errors": []
 }
